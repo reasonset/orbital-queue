@@ -1,5 +1,7 @@
 # orbital-queue
 
+[![CI](https://github.com/reasonset/orbital-queue/actions/workflows/ci.yml/badge.svg)](https://github.com/reasonset/orbital-queue/actions/workflows/ci.yml)
+
 ## Synopsis
 
 File-based queue library for orbital design pattern.
