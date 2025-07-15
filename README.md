@@ -1,4 +1,4 @@
-# orbital-queue
+# Orbital Queue
 
 [![CI](https://github.com/reasonset/orbital-queue/actions/workflows/ci.yml/badge.svg)](https://github.com/reasonset/orbital-queue/actions/workflows/ci.yml)
 
@@ -39,11 +39,12 @@ Since enqueued objects are serialized using `Marshal` and persisted as files, ca
 require 'orbitalqueue'
 
 queue = OrbitalQueue.new("/path/to/queue")
-data = queue.pop
+item = queue.pop
+data = item.data
 
 # Something, something...
 
-queue.complete data[:queue_id]
+item.complete
 ```
 
 Calling `#pop` retrieves a single item from the queue in no particular order.
@@ -53,4 +54,10 @@ The retrieved item enters a checkout state, and must be finalized by calling `#c
 If guaranteed completion is not required and the item should be removed immediately upon retrieval, use `#pop!` instead.
 
 Both `#pop` and `#pop!` return a queue item as a `Hash`. If the original object was not a `Hash`, it will be stored under the `:data` key. Regardless of the original type, the queue ID is always stored under the `:queue_id` key.
+
+# About Orbital Design
+
+## Description
+
+## Design pattern rules
 

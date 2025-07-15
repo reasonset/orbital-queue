@@ -45,6 +45,8 @@ class OrbitalQueue
   
   # Pop data from queue.
   # Popped queue items are placed in the checkout directory. After processing is complete, +#complete+ must be called to remove the item from the queue.
+  #
+  # If block is given, complete automatically after yield.
   def pop
     queue_data = nil
     queue_id = nil
@@ -57,28 +59,29 @@ class OrbitalQueue
         next
       end
 
-      queue_data = Marshal.load(File.read File.join(@queue_dir, ".checkout", File.basename(qf)))
+      data = Marshal.load(File.read File.join(@queue_dir, ".checkout", File.basename(qf)))
       queue_id = File.basename qf, ".marshal"
 
-      if Hash === queue_data
-        queue_data[:queue_id] = queue_id
-      else
-        queue_data = {queue_id: queue_id, data: queue_data}
-      end
+      queue_data = OrbitalQueue::QueueObject.new(self, data, queue_id)
       break
     end
 
-    queue_data
+    if block_given?
+      yield queue_data.data
+      complete queue_id
+    else
+      queue_data
+    end
   end
 
   # Pop data from queue and remove it from queue.
   def pop!
-    queue_data = pop
-    if queue_data
-      complete queue_data[:queue_id]
+    queue_item = pop
+    if queue_item
+      queue_item.complete
     end
 
-    queue_data
+    queue_item
   end
 
   # Remove checked out queue item.
@@ -90,5 +93,33 @@ class OrbitalQueue
     end
 
     queue_id
+  end
+end
+
+# Queue item capsule.
+class OrbitalQueue::QueueObject
+  def initialize(queue, data, queue_id)
+    @queue = queue
+    @data = data
+    @queue_id = queue_id
+    @completed = false
+  end
+
+  attr_reader :data
+
+  # Another complete interface.
+  def complete
+    if @completed
+      nil
+    else
+      @queue.complete(@queue_id)
+      @completed = true
+      @queue_id
+    end
+  end
+
+  # Terrible redundunt method.
+  def complete?
+    @completed
   end
 end
