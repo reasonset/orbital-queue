@@ -151,6 +151,8 @@ Since `OrbitalQueue` operates without a server, it cannot scan `.defer` efficien
 Aside from the internal keys `:count` and `:until`, all other values in `retry_data` are preserved as-is.  
 You can freely store custom metadata inside it—such as failure reasons or backoff parameters.
 
+Note: `defer` block is called after `:count` is incremented.
+
 The `#destruct` method removes all files associated with a queue item and raises `OrbitalQueue::ItemDestructed`.  
 This exception is caught inside `#defer`, allowing `#destruct` to abort the entire deferral process.
 

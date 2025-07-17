@@ -168,6 +168,7 @@ class OrbitalQueue
     retry_data[:count] += 1
     if block_given?
       yield retry_data
+      retry_data[:until] = retry_data[:until].to_i
     else
       unless time_at
         raise ArgumentError, "time_at is required when no block is given."
